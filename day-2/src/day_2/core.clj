@@ -38,8 +38,8 @@
         max-azules (reduce (fn [acc elt] (max acc (nth elt 2))) 0 componentes)]
     [max-rojos max-verdes max-azules]))
 
-; procesar-fila :: String -> Int
-(defn procesar-fila [fila]
+; procesar-tarea-1 :: String -> Int
+(defn procesar-tarea-1 [fila]
   (let [division-cadena (st/split fila #":")
         id-juego (-> division-cadena
                          (first)
@@ -58,11 +58,25 @@
       num-juego
       0)))
 
+; procesar-tarea-2 :: String -> Int
+(defn procesar-tarea-2 [fila]
+  (let [division-cadena (st/split fila #":")
+        cadena (second division-cadena)
+        maximos (obtener-maximos cadena)
+        max-rojos (first maximos)
+        max-verdes (second maximos)
+        max-azules (nth maximos 2)]
+    (* max-rojos max-verdes max-azules)))
+
 (defn -main [& args]
-  (let [salida-tarea (->> "./resources/input.lst"
-                          (slurp)
-                          (st/split-lines)
-                          (map procesar-fila))
-        tarea-1 (->> salida-tarea
-                     (reduce + 0))]
-    (println tarea-1)))
+  (let [entrada-tareas (->> "./resources/input.lst"
+                            (slurp)
+                            (st/split-lines))
+        salida-tarea-1 (map procesar-tarea-1 entrada-tareas)
+        salida-tarea-2 (map procesar-tarea-2 entrada-tareas)
+        tarea-1 (->> salida-tarea-1
+                     (reduce + 0))
+        tarea-2 (->> salida-tarea-2
+                     (reduce + 0))] 
+    (println tarea-1)
+    (println tarea-2)))
