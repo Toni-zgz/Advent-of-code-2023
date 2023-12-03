@@ -1,7 +1,19 @@
 (ns day-1.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.string :as st]))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+; procesar-fila :: String -> Int
+(defn procesar-fila [fila]
+  (let [lista-numeros (filter #(Character/isDigit %) fila)
+        primer-numero (first lista-numeros)
+        ultimo-numero (last lista-numeros)
+        cadena-numeros (str primer-numero ultimo-numero)]
+    (Integer/parseInt cadena-numeros)))
+
+(defn -main [& args]
+  (let [entrada-tareas (->> "./resources/input.lst"
+                            (slurp)
+                            (st/split-lines))
+        salida-tarea-1 (map procesar-fila entrada-tareas)
+        tarea-1 (reduce + 0 salida-tarea-1)]
+    (println tarea-1)))
