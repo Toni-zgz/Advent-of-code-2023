@@ -16,6 +16,9 @@
     (test/is (= (core/obtener-numero-jugadas-optimas 7 9) 4))
     (test/is (= (core/obtener-numero-jugadas-optimas 15 40) 8))
     (test/is (= (core/obtener-numero-jugadas-optimas 30 200) 9)))
-  (test/testing "probandoo obtener-lista"
-    (test/is (= (core/obtener-lista "Time:      7  15   30") [7 15 30]))
-    (test/is (= (core/obtener-lista "Distance:  9  40  200") [9 40 200]))))
+  (test/testing "probandoo obtener-lista-tarea-1"
+    (test/is (= (core/obtener-lista-tarea-1 "Time:      7  15   30") [7 15 30]))
+    (test/is (= (core/obtener-lista-tarea-1 "Distance:  9  40  200") [9 40 200])))
+  (test/testing "probandoo obtener-lista-tarea-2"
+    (test/is (= (core/obtener-lista-tarea-2 "Time:      7  15   30") 71530))
+    (test/is (= (core/obtener-lista-tarea-2 "Distance:  9  40  200") 940200))))
