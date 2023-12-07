@@ -41,11 +41,51 @@
         valor (comprobar-tarjetas ganadora mia)]
     (obtener-puntuacion valor)))
 
+; actualizar-vector :: [Int] -> (Int) -> [Int]
+(defn actualizar-vector [vector sec-cambios]
+  (loop [sec sec-cambios
+         vector vector]
+    (if (= sec '())
+      vector
+      (let [indice-cambio (first sec)
+            nuevo-valor (+ (get vector indice-cambio) 1)
+            nuevo-vector (assoc vector indice-cambio nuevo-valor)]
+        (recur (rest sec) nuevo-vector)))))
+
+; procesar-tarea-2 :: [String] -> Int
+(defn procesar-tarea-2 [lista]
+  (let [lista-tarjetas-ganadoras (map (fn [elt] (-> elt
+                                                    (obtener-tarjetas)
+                                                    (first)))
+                                      lista)
+        lista-tarjetas-mias (map (fn [elt] (-> elt
+                                               (obtener-tarjetas)
+                                               (second)))
+                                 lista)
+        lista-valores (into [] (map comprobar-tarjetas lista-tarjetas-ganadoras lista-tarjetas-mias))]
+    (loop [num-iteraciones 0
+           indice 0
+           vector-procesados (into [] (repeat (count lista) 1))]
+      (if (= indice (count lista))
+        num-iteraciones
+        (let [valor-calculado (get lista-valores indice)
+              seq-cambios (range (+ indice 1) (+ indice valor-calculado 1))
+              nuevo-valor (- (get vector-procesados indice) 1)
+              nuevo-vector-procesados (-> vector-procesados
+                                          (actualizar-vector seq-cambios)
+                                          (assoc indice nuevo-valor))
+              nuevo-indice (if (= (get nuevo-vector-procesados indice) 0)
+                             (+ indice 1)
+                             indice)]
+          (recur (+ num-iteraciones 1) nuevo-indice nuevo-vector-procesados))))))
+
 (defn -main [& args]
   (let [entrada-tareas (->> "./resources/input.lst"
                             (slurp)
                             (st/split-lines))
-        salida-tarea-1 (map procesar-tarea-1 entrada-tareas) 
+        salida-tarea-1 (map procesar-tarea-1 entrada-tareas)
         tarea-1 (->> salida-tarea-1
-                     (reduce + 0))] 
-    (println tarea-1)))
+                     (reduce + 0))
+        tarea-2 (procesar-tarea-2 entrada-tareas)]
+    (println tarea-1)
+    (println tarea-2)))
