@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [clojure.string :as st]))
 
-; convertir :: [[Int]] -> Int
+; convertir :: [[Long]] -> Long
 (defn convertir [tabla-conversion valor]
   (loop [tabla tabla-conversion]
     (if (= tabla '())
@@ -78,10 +78,45 @@
      :temperature-to-humidity tabla-temperatura-a-humedad
      :humidity-to-location tabla-humedad-a-localizacion}))
 
-; procesar-tarea-1 :: [String] -> [Int]
+; obtener-rangos :: [Long] -> [Long]
+(defn obtener-rangos [lista]
+  (loop [lista-entrada lista
+         lista-salida []]
+    (if (= lista-entrada [])
+      (into [] lista-salida)
+      (let [inicio (first lista-entrada)
+            longitud (second lista-entrada)
+            final (+ inicio longitud)
+            rango (range inicio final)
+            nueva-lista-salida (concat lista-salida rango)
+            nueva-lista-entrada (rest (rest lista-entrada))]
+        (recur nueva-lista-entrada nueva-lista-salida)))))
+
+; procesar-tarea-1 :: [String] -> [Long]
 (defn procesar-tarea-1 [texto]
   (let [tablas (obtener-datos texto)
         tabla-semillas (:seeds tablas)
+        tabla-semillas-a-suelo (:seed-to-soil tablas)
+        tabla-suelo-a-fertilizante (:soil-to-fertilizer tablas)
+        tabla-fertilizante-a-agua (:fertilizer-to-water tablas)
+        tabla-agua-a-luz (:water-to-light tablas)
+        tabla-luz-a-temperatura (:light-to-temperature tablas)
+        tabla-temperatura-a-humedad (:temperature-to-humidity tablas)
+        tabla-humedad-a-localizacion (:humidity-to-location tablas)]
+    (->> tabla-semillas
+         (map #(convertir tabla-semillas-a-suelo %))
+         (map #(convertir tabla-suelo-a-fertilizante %))
+         (map #(convertir tabla-fertilizante-a-agua %))
+         (map #(convertir tabla-agua-a-luz %))
+         (map #(convertir tabla-luz-a-temperatura %))
+         (map #(convertir tabla-temperatura-a-humedad %))
+         (map #(convertir tabla-humedad-a-localizacion %)))))
+
+; procesar-tarea-2 :: [String] -> [Long]
+(defn procesar-tarea-2 [texto]
+  (let [tablas (obtener-datos texto)
+        tabla-semillas (-> (:seeds tablas)
+                           (obtener-rangos))
         tabla-semillas-a-suelo (:seed-to-soil tablas)
         tabla-suelo-a-fertilizante (:soil-to-fertilizer tablas)
         tabla-fertilizante-a-agua (:fertilizer-to-water tablas)
@@ -102,6 +137,10 @@
   (let [entrada-tareas (->> "./resources/input.lst"
                             (slurp))
         salida-tarea-1 (procesar-tarea-1 entrada-tareas)
+        salida-tarea-2 (procesar-tarea-2 entrada-tareas)
         tarea-1 (->> salida-tarea-1
+                     (reduce min))
+        tarea-2 (->> salida-tarea-2
                      (reduce min))]
-    (println tarea-1)))
+    (println tarea-1)
+    (println tarea-2)))

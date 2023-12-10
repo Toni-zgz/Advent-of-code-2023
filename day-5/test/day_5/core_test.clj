@@ -68,4 +68,6 @@ humidity-to-location map:
   (test/testing "probando obtener-datos"
     (test/is (= (core/obtener-datos cadena) datos)))
   (test/testing "probando procesar-tarea-1"
-    (test/is (= (core/procesar-tarea-1 cadena) '(82 43 86 35)))))
+    (test/is (= (core/procesar-tarea-1 cadena) '(82 43 86 35))))
+  (test/testing "probando obtener-rangos"
+    (test/is (= (core/obtener-rangos [4 2 3 5]) [4 5 3 4 5 6 7]))))
