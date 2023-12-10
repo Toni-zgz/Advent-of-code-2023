@@ -14,4 +14,8 @@
   (test/testing "Probando obtener-siguiente-numero"
     (test/is (= (core/obtener-siguiente-numero [[0 3 6 9 12 15] [3 3 3 3 3] [0 0 0 0]]) 18))
     (test/is (= (core/obtener-siguiente-numero [[1 3 6 10 15 21] [2 3 4 5 6] [1 1 1 1] [0 0 0]]) 28))
-    (test/is (= (core/obtener-siguiente-numero [[10 13 16 21 30 45] [3 3 5 9 15] [0 2 4 6] [2 2 2] [0 0]]) 68))))
+    (test/is (= (core/obtener-siguiente-numero [[10 13 16 21 30 45] [3 3 5 9 15] [0 2 4 6] [2 2 2] [0 0]]) 68)))
+  (test/testing "Probando obtener-numero-previo"
+    (test/is (= (core/obtener-numero-previo [[0 3 6 9 12 15] [3 3 3 3 3] [0 0 0 0]]) -3))
+    (test/is (= (core/obtener-numero-previo [[1 3 6 10 15 21] [2 3 4 5 6] [1 1 1 1] [0 0 0]]) 0))
+    (test/is (= (core/obtener-numero-previo [[10 13 16 21 30 45] [3 3 5 9 15] [0 2 4 6] [2 2 2] [0 0]]) 5))))

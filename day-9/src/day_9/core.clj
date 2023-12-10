@@ -40,6 +40,16 @@
             valor (last lista)]
         (recur (- indice 1) (+ acumulador valor))))))
 
+; obtener-numero-previo :: [[Int]] -> Int
+(defn obtener-numero-previo [lista-de-listas]
+  (loop [indice (count lista-de-listas)
+         acumulador 0]
+    (if (= indice 0)
+      acumulador
+      (let [lista (get lista-de-listas (- indice 1))
+            valor (first lista)]
+        (recur (- indice 1) (- valor acumulador))))))
+
 ; procesar-tarea-1 :: String -> Int
 (defn procesar-tarea-1 [cadena]
   (let [lista-numeros (->>
@@ -50,10 +60,23 @@
         arbol-diferencias (obtener-arbol-diferencias lista-numeros)]
     (obtener-siguiente-numero arbol-diferencias)))
 
+; ; procesar-tarea-2 :: String -> Int
+(defn procesar-tarea-2 [cadena]
+  (let [lista-numeros (->>
+                       (-> cadena
+                           (st/split #" "))
+                       (map #(Integer/parseInt %))
+                       (into []))
+        arbol-diferencias (obtener-arbol-diferencias lista-numeros)]
+    (obtener-numero-previo arbol-diferencias)))
+
 (defn -main [& args]
   (let [entrada-tareas (->> "./resources/input.lst"
                             (slurp)
                             (st/split-lines))
-        salida-tarea-1 (map procesar-tarea-1 entrada-tareas) 
-        tarea-1 (reduce + 0 salida-tarea-1)]
-    (println tarea-1)))
+        salida-tarea-1 (map procesar-tarea-1 entrada-tareas)
+        salida-tarea-2 (map procesar-tarea-2 entrada-tareas)
+        tarea-1 (reduce + 0 salida-tarea-1)
+        tarea-2 (reduce + 0 salida-tarea-2)]
+    (println tarea-1)
+    (println tarea-2)))
