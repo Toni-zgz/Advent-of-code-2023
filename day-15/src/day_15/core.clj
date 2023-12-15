@@ -1,7 +1,26 @@
 (ns day-15.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.string :as st]))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(defn obtener-hash [cadena]
+  (reduce (fn [acc elt]
+           (if (= elt \space)
+             acc
+             (-> elt
+                (int)
+                (+ acc)
+                (* 17)
+                (rem 256))))
+          0 cadena))
+
+(defn procesar-tarea-1 [lista]
+  (map obtener-hash lista))
+
+(defn -main [& args]
+  (let [entrada-tareas (-> "./resources/input.lst"
+                            (slurp)
+                            (st/split #","))
+        salida-tarea-1 (procesar-tarea-1 entrada-tareas) 
+        tarea-1 (->> salida-tarea-1
+                     (reduce + 0))]
+         (println tarea-1)))
