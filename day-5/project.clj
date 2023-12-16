@@ -6,5 +6,7 @@
   :dependencies [[org.clojure/clojure "1.11.1"]]
   :main ^:skip-aot day-5.core
   :target-path "target/%s"
+  :jvm-opts ["-XX:-UseGCOverheadLimit"
+             "-Xmx1g"]
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}})
