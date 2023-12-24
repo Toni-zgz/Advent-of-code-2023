@@ -17,9 +17,9 @@
     (assoc lista nfila nueva-fila)))
 
 ; obtener-coordenadas :: [String] -> [[Int Int]]
-(defn obtener-coordenadas [lista-cadenas]
-  (let [alto (count lista-cadenas)
-        ancho (-> (first lista-cadenas)
+(defn obtener-coordenadas [tablero valor-a-buscar]
+  (let [alto (count tablero)
+        ancho (-> (first tablero)
                   (count))
         rango-columnas (range 0 ancho)
         rango-filas (range 0 alto)
@@ -29,8 +29,8 @@
         es-una-o? (fn [elt]
                     (let [x (first elt)
                           y (second elt)
-                          valor (get-2d lista-cadenas x y)]
-                      (= valor \O)))]
+                          valor (get-2d tablero x y)]
+                      (= valor valor-a-buscar)))]
     (filter es-una-o? lista-coordenadas)))
 
 ; imprimir-siguiente-paso :: [String] -> [[Int Int]] -> [String]
@@ -65,11 +65,24 @@
                                 (recur (rest coordenadas) nuevo-tablero-bucle))))]
         (recur nueva-lista nuevo-tablero)))))
 
-;; (defn -main [& args]
-;;   (let [entrada-tareas (->> "./resources/input.lst"
-;;                             (slurp)
-;;                             (st/split-lines))
-;;         num-pasos 64
-;;         salida-tarea-1 (procesar-tarea-1 entrada-tareas num-pasos) 
-;;         tarea-1 (reduce + 0 salida-tarea-1)]
-;;     (println tarea-1)))
+(defn procesar-tarea-1 [tablero-inicial nveces]
+  (loop [nveces-bucle nveces
+         tablero-bucle tablero-inicial]
+    (if (= nveces-bucle 0)
+      tablero-bucle
+      (let [lista-coordenadas (obtener-coordenadas tablero-bucle \O)
+            lista-valida (if (= lista-coordenadas '())
+                           (obtener-coordenadas tablero-bucle \S)
+                           lista-coordenadas)
+            nuevo-tablero-bucle (imprimir-siguiente-paso tablero-inicial lista-valida)]
+        (recur (- nveces-bucle 1) nuevo-tablero-bucle)))))
+
+(defn -main [& args]
+  (let [entrada-tareas (->> "./resources/input.lst"
+                            (slurp)
+                            (st/split-lines))
+        num-pasos 64
+        salida-tarea-1 (procesar-tarea-1 entrada-tareas num-pasos) 
+        tarea-1 (-> (obtener-coordenadas salida-tarea-1 \O)
+                    (count))]
+    (println tarea-1)))
