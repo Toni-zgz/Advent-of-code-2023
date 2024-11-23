@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [clojure.string :as st]))
 
-; convertir :: [[Long]] -> Long
+; convertir :: [[Long]] -> Long -> Long
 (defn convertir [tabla-conversion valor]
   (loop [tabla tabla-conversion]
     (if (= tabla '())
@@ -78,22 +78,6 @@
      :temperature-to-humidity tabla-temperatura-a-humedad
      :humidity-to-location tabla-humedad-a-localizacion}))
 
-; obtener-rangos :: [Long] -> [Long]
-(defn obtener-rangos [lista]
-  (loop [lista-entrada lista
-         conjunto-salida (set '())]
-    (if (= lista-entrada [])
-      (into [] conjunto-salida)
-      (let [inicio (first lista-entrada)
-            longitud (second lista-entrada)
-            final (+ inicio longitud)
-            rango (range inicio final)
-            nuevo-conjunto-salida (->> rango
-                                    (concat conjunto-salida)
-                                    (into #{}))
-            nueva-lista-entrada (rest (rest lista-entrada))]
-        (recur nueva-lista-entrada nuevo-conjunto-salida)))))
-
 ; procesar-tarea-1 :: [String] -> [Long]
 (defn procesar-tarea-1 [texto]
   (let [tablas (obtener-datos texto)
@@ -117,8 +101,9 @@
 ; procesar-tarea-2 :: [String] -> [Long]
 (defn procesar-tarea-2 [texto]
   (let [tablas (obtener-datos texto)
-        tabla-semillas (-> (:seeds tablas)
-                           (obtener-rangos))
+        tabla-semillas (->> tablas
+                            (:seeds)
+                            (partition 2))
         tabla-semillas-a-suelo (:seed-to-soil tablas)
         tabla-suelo-a-fertilizante (:soil-to-fertilizer tablas)
         tabla-fertilizante-a-agua (:fertilizer-to-water tablas)
@@ -126,16 +111,34 @@
         tabla-luz-a-temperatura (:light-to-temperature tablas)
         tabla-temperatura-a-humedad (:temperature-to-humidity tablas)
         tabla-humedad-a-localizacion (:humidity-to-location tablas)]
-    (println (count tabla-semillas))
-    ;; (->> tabla-semillas
-    ;;      (map #(convertir tabla-semillas-a-suelo %))
-    ;;      (map #(convertir tabla-suelo-a-fertilizante %))
-    ;;      (map #(convertir tabla-fertilizante-a-agua %))
-    ;;      (map #(convertir tabla-agua-a-luz %))
-    ;;      (map #(convertir tabla-luz-a-temperatura %))
-    ;;      (map #(convertir tabla-temperatura-a-humedad %))
-    ;;      (map #(convertir tabla-humedad-a-localizacion %)))
-    ))
+    (loop [lista-entrada tabla-semillas
+           lista-salida []]
+        (if (= lista-entrada '())
+            lista-salida
+            (let [elt (first lista-entrada)
+                  nueva-lista-entrada (rest lista-entrada)
+                  actual (first elt)
+                  num-elems (second elt)
+                  elem-procesado (loop [indice actual
+                                        quedan num-elems
+                                        valor 1e100]
+                                     (if (= quedan 0)
+                                         valor
+                                         (let [nuevo-indice (+ indice 1)
+                                               nuevo-quedan (- quedan 1)
+                                               valor-obtenido (->> indice
+                                                                  (convertir tabla-semillas-a-suelo)
+                                                                  (convertir tabla-suelo-a-fertilizante)
+                                                                  (convertir tabla-fertilizante-a-agua)
+                                                                  (convertir tabla-agua-a-luz)
+                                                                  (convertir tabla-luz-a-temperatura)
+                                                                  (convertir tabla-temperatura-a-humedad)
+                                                                  (convertir tabla-humedad-a-localizacion))
+                                               nuevo-valor (min valor valor-obtenido)]
+                                             (println quedan)
+                                             (recur nuevo-indice nuevo-quedan nuevo-valor))))
+                  nueva-lista-salida (conj lista-salida elem-procesado)]
+                (recur nueva-lista-entrada nueva-lista-salida))))))
 
 (defn -main [& args]
   (let [entrada-tareas (->> "./resources/input.lst"
