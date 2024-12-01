@@ -2,24 +2,29 @@
   (:gen-class)
   (:require [clojure.string :as st]))
 
-; obtener-numero-ciclos :: String -> {String, [String String]} -> Int
-(defn obtener-numero-ciclos [cadena nodos]
+; obtener-nuevo-ciclo :: {String, [String String]} -> [String] -> String -> [String]
+(defn obtener-nuevo-nodo [nodos nodo direccion] 
+  (if (= direccion "L")
+    (map #(-> (get nodos %)
+              (first)) nodo)
+    (map #(-> (get nodos %)
+              (second)) nodo)))
+
+; obtener-numero-ciclos-tarea-1 :: String -> {String, [String String]} -> Int
+(defn obtener-numero-ciclos-tarea-1 [cadena nodos]
   (loop [numero-ciclos 0
          indice-programa 0
-         nodo "AAA"]
-    (if (= nodo "ZZZ")
-      numero-ciclos
-      (let [nuevo-indice-programa (if (= indice-programa (- (count cadena) 1))
-                                    0
-                                    (+ indice-programa 1))
-            direccion (-> (get cadena indice-programa)
-                          (str))
-            nuevo-nodo (if (= direccion "L")
-                         (-> (get nodos nodo)
-                             (first))
-                         (-> (get nodos nodo)
-                             (second)))]
-        (recur (+ numero-ciclos 1) nuevo-indice-programa nuevo-nodo)))))
+         nodo ["AAA"]]
+   (if (= nodo ["ZZZ"])
+     numero-ciclos
+     (let [nuevo-indice-programa (if (= indice-programa (- (count cadena) 1))
+                                   0
+                                   (+ indice-programa 1))
+           direccion (-> (get cadena indice-programa)
+                         (str))
+           nuevo-nodo (obtener-nuevo-nodo nodos nodo direccion)]
+       (println nuevo-nodo)
+       (recur (+ numero-ciclos 1) nuevo-indice-programa nuevo-nodo)))))
 
 ; obtener-datos :: [String] -> {String, [String String]}
 (defn obtener-datos [lista-cadenas]
@@ -42,7 +47,7 @@
 (defn procesar-tarea-1 [lista-filas]
   (let [cadena-programa (first lista-filas)
         dict-nodos (obtener-datos (drop 2 lista-filas))]
-    (obtener-numero-ciclos cadena-programa dict-nodos)))
+    (obtener-numero-ciclos-tarea-1 cadena-programa dict-nodos)))
 
 (defn -main [& args]
   (let [entrada-tareas (->> "./resources/input.lst"
